@@ -9,7 +9,6 @@ numpy
 geopandas
 matplotlib
 seaborn
-io
 datetime
 rasterstats
 rioxarray
