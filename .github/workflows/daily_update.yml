@@ -22,8 +22,8 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas xarray pyarrow boto3 arcgis scikit-learn lightgbm numpy geopandas matplotlib seaborn io datetime rasterstats rioxarray concurrent functools shapely re herbie requests rasterio zipfile joblib imblearn
-
+          pip install -r requirements.txt
+          
       - name: 1. Ingest Raw Model and Observational Data
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
