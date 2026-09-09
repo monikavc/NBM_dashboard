@@ -12,13 +12,9 @@ seaborn
 datetime
 rasterstats
 rioxarray
-concurrent
-functools
 shapely
-re
 herbie
 requests
 rasterio
-zipfile
 joblib
-imblearn
+imbalanced-learn
