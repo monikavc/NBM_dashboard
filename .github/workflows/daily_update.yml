@@ -30,8 +30,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          python data_aggregation_prism.py
-          python data_aggregation_nbm.py
+          python dynamic_aggregation_prism.py
+          python dynamic_aggregation_nbm.py
 
       - name: 2. Process Rolling Windows & Merging Parquet files
         env:   
