@@ -13,7 +13,7 @@ datetime
 rasterstats
 rioxarray
 shapely
-herbie
+herbie-data
 requests
 rasterio
 joblib
