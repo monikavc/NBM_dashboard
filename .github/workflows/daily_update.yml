@@ -1,0 +1,55 @@
+name: ArcGIS NBM Dashboard Daily Update
+
+on:
+  schedule:
+    - cron: '30 7 * * *'
+  workflow_dispatch:  #  allows manual trigger from GH UI for testing
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas xarray pyarrow boto3 arcgis scikit-learn lightgbm numpy geopandas matplotlib seaborn io datetime rasterstats rioxarray concurrent functools shapely re herbie requests rasterio zipfile joblib imblearn
+
+      - name: 1. Ingest Raw Model and Observational Data
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          python data_aggregation_prism.py
+          python data_aggregation_nbm.py
+
+      - name: 2. Process Rolling Windows & Merging Parquet files
+        env:   
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          python data_analysis_maxt.py
+          python data_analysis_mint.py 
+          python data_analysis_qpf.py
+
+      - name: 3. Run ML Model on Newest records, append to ArcGIS  feature layers  
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          ARCGIS_URL: ${{ secrets.ARCGIS_URL }}
+          ARCGIS_USERNAME: ${{ secrets.ARCGIS_USERNAME }} 
+          ARCGIS_PASSWORD: ${{ secrets.ARCGIS_PASSWORD }}
+        run: | 
+          python arcgis-temp-qpf.py
